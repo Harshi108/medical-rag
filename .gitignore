@@ -1,0 +1,7 @@
+
+venv/
+__pycache__/
+*.pyc
+medical_db/
+.env
+.cache/
