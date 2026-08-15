@@ -3,7 +3,7 @@ print("1. retrieval.py started")
 import chromadb
 print("2. chromadb imported")
 
-from LLM import generate_answer
+from backend.LLM import generate_answer
 print("3. LLM imported")
 
 from sentence_transformers import SentenceTransformer

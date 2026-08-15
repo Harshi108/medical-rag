@@ -1,34 +1,36 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from retrieval import retrieve_answer
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-app = Flask(__name__)
-CORS(app)
+from backend.retrieval import retrieve_answer
 
-@app.route("/")
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+
+class QuestionRequest(BaseModel):
+    question: str
+
+
+@app.get("/")
 def home():
-    return " Medical AI Backend Running"
+    return {
+        "message": "Medical RAG API is running"
+    }
 
-@app.route("/ask",methods = ["POST"])
-def ask():
-    data = request.get_json()
-    question = data.get("question","")
-    answer = retrieve_answer(question)
 
-    return jsonify({
-        "answer":f"you asked: {question}"
-    })
+@app.post("/ask")
+def ask_question(request: QuestionRequest):
+    answer = retrieve_answer(request.question)
 
-@app.route("/ask", methods=["POST"])
-def ask():
-
-    data = request.get_json()
-    question = data.get("question", "")
-
-    answer = retrieve_answer(question)
-
-    return jsonify({
+    return {
         "answer": answer
-    })
-if __name__ == "__main__":
-    app.run(debug = True)
+    }
